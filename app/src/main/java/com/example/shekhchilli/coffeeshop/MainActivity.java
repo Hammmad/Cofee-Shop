@@ -1,5 +1,7 @@
 package com.example.shekhchilli.coffeeshop;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -15,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
     final int CREAM_RATE = 15;
     int Quantity = 1;
     int Total = 0;
+    String summary;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,18 +78,30 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Please select Flavour", Toast.LENGTH_SHORT).show();
                 }
                 if (chocolateCheckbox.isChecked() | creamCheckbox.isChecked()) {
-                    DisplaySummary(summaryTextview, nameEdittext);
+                    DisplaySummary(nameEdittext);
+                    String uriText =
+                            "mailto:johngill@gmail.com" +
+                                    "?subject=" + Uri.encode("Order Summary") +
+                                    "&body=" + Uri.encode(summary);
+                    Uri uri = Uri.parse(uriText);
+                    Intent intent = new Intent(Intent.ACTION_SENDTO);
+                    intent.setData(uri);
+                    if(intent.resolveActivity(getPackageManager())!= null){
+                        startActivity(Intent.createChooser(intent,"Send email"));
+                    }
                 }
             }
         }
     );
 }
 
-    private void DisplaySummary(TextView summaaryTextview, EditText nameEdittext) {
-        summaaryTextview.setText(
-                getString(R.string.name) +" :"+ nameEdittext.getText() + "\n"+
+    private String DisplaySummary(EditText nameEdittext) {
+
+
+        summary = getString(R.string.name) +" :"+ nameEdittext.getText() + "\n"+
                 getString(R.string.quantity) +" : "+Quantity+ "\n"+
                 getString(R.string.total) + " : $" +Total +"\n" +
-                getString(R.string.thankyou));
+                getString(R.string.thankyou);
+        return summary;
     }
 }
